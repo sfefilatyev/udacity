@@ -31,6 +31,12 @@ public:
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
+  // Measurement noise covariance matrix for radar
+  MatrixXd R_radar_;
+
+  // Measurement noise covariance matrix for lidar
+  MatrixXd R_lidar_;
+
   ///* time when the state is true, in us
   long long time_us_;
 
@@ -59,10 +65,16 @@ public:
   VectorXd weights_;
 
   ///* State dimension
-  int n_x_;
+  unsigned n_x_;
 
   ///* Augmented state dimension
-  int n_aug_;
+  unsigned n_aug_;
+
+  // Radar measurement dimension
+  unsigned n_z_;
+
+  // Lidar measurement dimension
+  unsigned n_l_;
 
   ///* Sigma point spreading parameter
   double lambda_;
@@ -80,9 +92,9 @@ public:
 
   /**
    * ProcessMeasurement
-   * @param meas_package The latest measurement data of either radar or laser
+   * @param meas_package: Reference to the latest measurement data of either radar or laser
    */
-  void ProcessMeasurement(MeasurementPackage meas_package);
+  void ProcessMeasurement(const MeasurementPackage & meas_package);
 
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
@@ -92,37 +104,45 @@ public:
   void Prediction(double delta_t);
 
   /**
-   * Updates the state and the state covariance matrix using a laser measurement
-   * @param meas_package The measurement at k+1
+   * Updates the state and the state covariance matrix using a laser measurement.
+   * @param meas_package: Reference to the measurement at k+1 from lidar.
    */
-  void UpdateLidar(MeasurementPackage meas_package);
+  void UpdateLidar(const MeasurementPackage & meas_package);
 
   /**
-   * Updates the state and the state covariance matrix using a radar measurement
-   * @param meas_package The measurement at k+1
+   * Updates the state and the state covariance matrix using a radar measurement.
+   * @param meas_package: Reference to the measurement at k+1 from radar.
    */
-  void UpdateRadar(MeasurementPackage meas_package);
+  void UpdateRadar(const MeasurementPackage & meas_package);
 
 private:
   /**
    * Populates provided matrix with sigma points based on the current state and covariance.
-   * @param pointer to MatrixD matrix that will store results.
+   * @param reference to MatrixD matrix that will store results.
    */
-  void GenerateSigmaPoints(MatrixXd* Xsig_out);
+  void GenerateSigmaPoints(MatrixXd & Xsig_aug);
 
   /**
    * Populates provided matrix with predicted sigma points.
-   * @param Xsig_aug: reference to initial sigma points matrix.
-   *        Xsig_pred: pointer to MatrixD matrix that will store predicted sigma points.
+   * @param Xsig_aug: constant reference to initial sigma points matrix.
+   *        Xsig_pred: reference to MatrixD matrix that will store predicted sigma points.
    *        delta_t: time difference between measurements.
    */
-  void PredictSigmaPoints(MatrixXd& Xsig_aug, MatrixXd* Xsig_pred, float delta_t);
+  void PredictSigmaPoints(const MatrixXd & Xsig_aug, MatrixXd & Xsig_pred, float delta_t);
 
   /**
    * Predict mean state and its covariance matrix.
-   * @param: Xsig: reference to predicted sigma points matrix.
+   * @param: Xsig_pred: reference to predicted sigma points matrix.
    */
-  void UKF::PredictMeanAndCovariance(MatrixXd & Xsig);
+  void PredictMeanAndCovariance(const MatrixXd & Xsig_pred);
+
+  /**
+   * Predict mean and covariance of the state vector in the radar measurement space
+   * @param Xsig_pred: constant reference to MatrixD matrix that will store predicted sigma points.
+   *        z_pred: reference to vector to hold predicted mean of the measurement.
+   *        S: reference to a covariance matrix of the measurement.
+   */
+  void PredictRadarMeasurement(const MatrixXd & Xsig_pred, MatrixXd & Zsig, VectorXd & z_pred, MatrixXd & S);
 
 };
 
