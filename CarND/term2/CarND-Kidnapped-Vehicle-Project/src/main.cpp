@@ -90,15 +90,15 @@ int main() {
           std::istringstream iss_x(sense_observations_x);
 
           std::copy(std::istream_iterator<float>(iss_x),
-          std::istream_iterator<float>(),
-          std::back_inserter(x_sense));
+                    std::istream_iterator<float>(),
+                    std::back_inserter(x_sense));
 
           vector<float> y_sense;
           std::istringstream iss_y(sense_observations_y);
 
           std::copy(std::istream_iterator<float>(iss_y),
-          std::istream_iterator<float>(),
-          std::back_inserter(y_sense));
+                    std::istream_iterator<float>(),
+                    std::back_inserter(y_sense));
 
           for (int i = 0; i < x_sense.size(); ++i) {
             LandmarkObs obs;
