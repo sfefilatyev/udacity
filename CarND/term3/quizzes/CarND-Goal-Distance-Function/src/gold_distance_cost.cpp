@@ -1,3 +1,5 @@
+#include <math.h>
+
 double goal_distance_cost(int goal_lane, int intended_lane, int final_lane, 
                           double distance_to_goal) {
   // The cost increases with both the distance of intended lane from the goal
