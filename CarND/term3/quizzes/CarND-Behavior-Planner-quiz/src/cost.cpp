@@ -13,7 +13,7 @@ using std::vector;
 /**
  * TODO: change weights for cost functions.
  */
-const float REACH_GOAL = pow(10, 6);
+const float REACH_GOAL = pow(10, 5);
 const float EFFICIENCY = pow(10, 5);
 
 // Here we have provided two possible suggestions for cost functions, but feel 
