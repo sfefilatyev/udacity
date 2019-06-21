@@ -10,10 +10,10 @@ using std::endl;
 int SPEED_LIMIT = 10;
 
 // all traffic in lane (besides ego) follow these speeds
-vector<int> LANE_SPEEDS = {6,7,8,9}; 
+vector<int> LANE_SPEEDS = {2,4,6,8}; 
 
 // Number of available "cells" which should have traffic
-double TRAFFIC_DENSITY = 0.15;
+double TRAFFIC_DENSITY = 0.25;
 
 // At each timestep, ego can set acceleration to value between 
 //   -MAX_ACCEL and MAX_ACCEL
@@ -41,7 +41,7 @@ int main() {
   int num_lanes = LANE_SPEEDS.size();
   vector<int> ego_config = {SPEED_LIMIT,num_lanes,goal_s,goal_lane,MAX_ACCEL};
    
-  road.add_ego(2,0, ego_config);
+  road.add_ego(0, 0, ego_config);
   int timestep = 0;
   
   while (road.get_ego().s <= GOAL[0]) {
