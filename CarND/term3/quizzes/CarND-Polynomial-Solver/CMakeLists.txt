@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
 set(sources src/main.cpp)
 
-include_directories(/usr/local/include)
+include_directories(/usr/local/include src/Eigen-3.3/Eigen)
 link_directories(/usr/local/lib)
 
 add_executable(PolynomialSolver ${sources})
