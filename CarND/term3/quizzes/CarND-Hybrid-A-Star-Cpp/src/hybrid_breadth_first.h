@@ -2,6 +2,7 @@
 #define HYBRID_BREADTH_FIRST_H_
 
 #include <vector>
+#include <algorithm>
 
 using std::vector;
 
@@ -16,7 +17,7 @@ class HBF {
   // HBF structs
   struct maze_s {
     int g;  // iteration
-    int f;
+    int f;  // heuristic ordering distance
     double x;
     double y;
     double theta;
@@ -32,12 +33,12 @@ class HBF {
   int theta_to_stack_number(double theta);
 
   int idx(double float_num);
-    
-  double heuristic(double x, double y, vector<int> &goal);
+  
+  // Heuristic that returns Euclidian distance from the current position
+  // to the goal location.
+  double heuristic(vector<double>&current, vector<double>&goal);
 
-  static bool compare_maze_s(const HBF::maze_s &lhs, const HBF::maze_s &rhs);
-
-  vector<maze_s> expand(maze_s &state, vector<int> &goal);
+  vector<maze_s> expand(maze_s &state, vector<double>&goal);
 
   vector<maze_s> reconstruct_path(vector<vector<vector<maze_s>>> &came_from, 
                                   vector<double> &start, HBF::maze_s &final);
