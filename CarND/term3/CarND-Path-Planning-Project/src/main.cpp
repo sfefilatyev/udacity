@@ -52,13 +52,14 @@ int main() {
     map_waypoints_dy.push_back(d_y);
   }
 
-  int lane = 1; // middle lane within the Frenet space.
+  int lane = 1; // Middle lane within the Frenet space.
 
-  // Reference velocity for the car.
+  // Reference velocity and acceleration for the car.
   double ref_vel = 0.0; // In miles per hour.
+  double ref_acc = 0.6; // In miles per hour.
   
   h.onMessage([&map_waypoints_x,&map_waypoints_y,&map_waypoints_s,
-               &map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel]
+               &map_waypoints_dx,&map_waypoints_dy, &lane, &ref_vel, &ref_acc]
               (uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -97,63 +98,99 @@ int main() {
 
           json msgJson;
 
-          /**
-           * TODO: define a path made up of (x,y) points that the car will visit
-           *   sequentially every .02 seconds
-           */
+          /** PROJECT CONTRIBUTION BEGIN */
+          
           /*
             List of widely separated waypoints to fit spline trajectory onto.
-            Initially, they are spaced at 30 meters apart.
+            Initially, they are spaced at PLANNING_HORIZON_DISTANCE meters apart.
           */
           vector<double> ptsx;
           vector<double> ptsy;
-
-
 
           int prev_size = previous_path_x.size();
 
           if (prev_size > 0)
           {
             // For planning purposes, we go to the place in time where the last
-            // predicted path point would be. Later in the code we'll do the same
-            // for the first other other in the same lane.
+            // predicted path point would be. 
             car_s = end_path_s; 
           }
 
+          // Sensor fusion and prediction and trajectory generation.
           bool too_close = false;
 
-          // Find ref_v to use.
-          for (int i = 0; i < sensor_fusion.size(); ++i){
-            // Car is in my lane .
-            float d = sensor_fusion[i][6]; // 6 is position of the d-coordinate in Frenet.
-            if (d < (2 + 4 * lane + 2) && d > (2 + 4 * lane - 2)){
+          // The following two variables are `poor's man` cost functions for changing 
+          // lane to the right or to the left. The larger the distance to the car in either
+          // of those lanes, the more preferable such direction is for a lane change.
+          double closest_car_left_lane = 10000; // Distance to the closest car in left lane (can be negative!)
+          double closest_car_right_lane = 10000;  // Distance to the closest car in right lane.
+          for (int i = 0; i < sensor_fusion.size(); ++i) {
+              float d = sensor_fusion[i][6];
+              // Assign the car to the lane space.
+              int car_lane = getLane(d);
+              if (car_lane == -1)
+                continue;
+              
               double vx = sensor_fusion[i][3]; // vx component of the other car speed.
               double vy = sensor_fusion[i][4]; // vy component of the other car speed.
               double check_speed = sqrt(vx * vx + vy * vy);
               double check_car_s = sensor_fusion[i][5];
 
-              // If using previous points can project s value out in time for the
+              // Using previous points project s value out in time for the
               // whole duration of 'previous_path' points.
-              check_car_s += static_cast<double>(prev_size) * 0.02 * check_speed;
+              check_car_s += static_cast<double>(prev_size) * PLANNING_TICK_INTEVAL * check_speed;
 
-              // Check the condition when ego-car position and distance to the car ahead.
-              // IF the car is ahead of us and distance between them is less then 30 meters.
-              if ((check_car_s > car_s) && (check_car_s - car_s < 30)){
-                // Lower the velocity so that we don't crash into the car ahead.
-                too_close = true;
-                if (lane > 0)
-                {
-                  lane = 0;
+              if (lane - car_lane == 0) {  // Checking ego lane.
+                if (check_car_s > car_s && check_car_s - car_s < PLANNING_HORIZON_DISTANCE)
+                  too_close = true;
+              } else if (lane - car_lane == 1 ) { // Checking closest vehicle in left lane.
+                if (check_car_s - car_s < closest_car_left_lane &&
+                    check_car_s - car_s > -0.5 * PLANNING_HORIZON_DISTANCE){
+                  closest_car_left_lane = check_car_s - car_s;
+                }
+              } else if (lane - car_lane == -1 ) { // Checking closest vehicle right lane.
+                if (check_car_s - car_s < closest_car_right_lane  &&
+                    check_car_s - car_s > -0.5 * PLANNING_HORIZON_DISTANCE){
+                  closest_car_right_lane = check_car_s - car_s;
                 }
               }
-            }
+              else{
+                continue ; // Ignore cars two lane apart from the ego car.
+              }
           }
 
-          if (too_close){
-            ref_vel -= 0.224;
-          }
-          else if (ref_vel < 49.5){
-            ref_vel += 0.224;
+          #ifdef DEBUG_MODE
+          std::cout << "Closest vehicle in left lane: " <<  closest_car_left_lane << std::endl;
+          std::cout << "Closest vehicle in right lane: " <<  closest_car_right_lane << std::endl;
+          #endif
+
+          
+          if (too_close) { // Car ahead
+            // Considering left and right change based on the distance to the closest
+            // vehicle in those lanes.
+            if (closest_car_left_lane > PLANNING_HORIZON_DISTANCE &&
+                (closest_car_left_lane > closest_car_right_lane || lane == 2) &&
+                lane != 0) {
+              lane--; // Change lane left.
+            } else if (closest_car_right_lane > PLANNING_HORIZON_DISTANCE &&
+                 (closest_car_right_lane > closest_car_left_lane || lane == 0) &&
+                 lane != 2) {
+              lane++; // Change lane right.
+            } else {
+              ref_vel -= ref_acc; // Adjust speed with the speed of the vehicle in lane.
+              
+              if (fabs(ref_acc) > MAX_ACCELERATION)
+                ref_acc -= MAX_JERK;
+            }
+          } else {
+            // Adjust the speed to right below speed limit. The adaptive adjusting (with adaptive acceleration)
+            // is needed to avoid oscilliation behavior when tail-gating a vehicle from behind.
+            if (ref_vel < MAX_SPEED) {
+              ref_vel += ref_acc;
+              ref_acc += MAX_JERK;
+              if (fabs(ref_acc) < MAX_ACCELERATION)
+                ref_acc -= MAX_JERK;
+            }
           }
 
           // Reference x, y, and yaw for the car.
@@ -192,24 +229,24 @@ int main() {
             ptsy.push_back(ref_y);
           }
 
-          // In Frenet coordinate space add evenly spaced by 30m three points
-          // ahead of the starting reference point.
+          // In Frenet coordinate space add evenly spaced by PLANNING_HORIZON_DISTANCE m 
+          // three points ahead of the starting reference point.
           vector<double> next_wp0 = getXY(
-            car_s + 30,
+            car_s + PLANNING_HORIZON_DISTANCE * 1,
             2 + 4 * lane,
             map_waypoints_s,
             map_waypoints_x,
             map_waypoints_y
             );
           vector<double> next_wp1 = getXY(
-            car_s + 60,
+            car_s + PLANNING_HORIZON_DISTANCE * 2,
             2 + 4 * lane,
             map_waypoints_s,
             map_waypoints_x,
             map_waypoints_y
             );
           vector<double> next_wp2 = getXY(
-            car_s + 90,
+            car_s + PLANNING_HORIZON_DISTANCE * 3,
             2 + 4 * lane,
             map_waypoints_s,
             map_waypoints_x,
@@ -249,17 +286,16 @@ int main() {
 
           // Calculate how to break up spline points so that we travel at our
           // desired reference velocity.
-          double target_x = 30;
+          double target_x = PLANNING_HORIZON_DISTANCE;
           double target_y = spl(target_x);
           double target_dist = sqrt(target_x * target_x + target_y * target_y);
 
           double x_add_on = 0;
 
           // Fill up the rest of our path planner after filling it with prevoius
-          // points, here we will always output 50 points
-          for (int i = 1; i <= 50 - prev_size; ++i){
-            // 2.237 is conversion from miles an hour to meters per second.
-            double N = (target_dist / (0.02 * ref_vel / 2.237));
+          // points, here we will always output PLANNING_NUM_INTEVALS points
+          for (int i = 1; i <= PLANNING_NUM_INTEVALS - prev_size; ++i){
+            double N = (target_dist / (PLANNING_TICK_INTEVAL * ref_vel / MPH2MPS));
             
             double x_point = x_add_on + (target_x) / N;
             double y_point = spl(x_point);
@@ -280,10 +316,7 @@ int main() {
             next_y_vals.push_back(y_point);
           }
 
-          /** TODO END
-           * 
-           */
-
+          /** PROJECT CONTRIBUTION END */
 
           msgJson["next_x"] = next_x_vals;
           msgJson["next_y"] = next_y_vals;
