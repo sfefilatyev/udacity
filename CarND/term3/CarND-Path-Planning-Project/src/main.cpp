@@ -198,7 +198,7 @@ int main() {
           double ref_y = car_y;
           double ref_yaw = deg2rad(car_yaw);
 
-          // If previosu size is almost empty, use the car as starting reference.
+          // If previous size is almost empty, use the car as starting reference.
           if (prev_size < 2){
             // Calculate single previous point by tracing ego-motion back
             // by unit-vector, making the two-point path tangent to the ego car.
