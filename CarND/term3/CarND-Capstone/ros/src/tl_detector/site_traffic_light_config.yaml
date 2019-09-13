@@ -1,0 +1,13 @@
+camera_info:
+  focal_length_x: 1345.200806
+  focal_length_y: 1353.838257
+  image_width: 800
+  image_height: 600
+stop_line_positions:
+    - [8.0, 16.2]
+is_site: True
+tl_detection_from_topic: False    # this option only turns off classifier in the simulator.  Should be False on a real site.
+tl_model_path: /light_classification/tl_models/al_ssd_real/frozen_inference_graph.pb
+tl_detector_rate: 6
+tl_start_detection_distance: 100
+min_detect_tl_score_thresh: 0.5
