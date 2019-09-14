@@ -1,0 +1,18 @@
+camera_info:
+  image_width: 800
+  image_height: 600
+stop_line_positions:
+    - [1148.56, 1184.65]
+    - [1559.2, 1158.43]
+    - [2122.14, 1526.79]
+    - [2175.237, 1795.71]
+    - [1493.29, 2947.67]
+    - [821.96, 2905.8]
+    - [161.76, 2303.82]
+    - [351.84, 1574.65]
+is_site: False
+tl_detection_from_topic: False
+tl_model_path: /light_classification/tl_models/al_ssd_sim/frozen_inference_graph.pb
+tl_detector_rate: 6
+tl_start_detection_distance: 100
+min_detect_tl_score_thresh: 0.5
