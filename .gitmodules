@@ -1,0 +1,4 @@
+[submodule "CarND/term1/CarND-Traffic-Sign-Classifier/--force"]
+	path = CarND/term1/CarND-Traffic-Sign-Classifier/--force
+	url = git@github.com:sfefilatyev/CarND-Traffic-Sign-Classifier.git
+	branch = master
