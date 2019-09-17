@@ -2,7 +2,3 @@
 	path = CarND/term1/CarND-Traffic-Sign-Classifier
 	url = git@github.com:sfefilatyev/CarND-Traffic-Sign-Classifier.git
 	branch = master
-[submodule "CarND/term3/CarND-Object-Detection-Lab"]
-	path = CarND/term3/CarND-Object-Detection-Lab
-	url = git@github.com:sfefilatyev/CarND-Object-Detection-Lab.git
-	branch = master
