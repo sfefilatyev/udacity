@@ -6,3 +6,7 @@
 	path = CarND/term3/CarND-Object-Detection-Lab
 	url = git@github.com:sfefilatyev/CarND-Object-Detection-Lab.git
 	branch = master
+[submodule "CarND/term3/CarND-Semantic-Segmentation"]
+	path = CarND/term3/CarND-Semantic-Segmentation
+	url = git@github.com:sfefilatyev/CarND-Semantic-Segmentation.git
+	branch = master
