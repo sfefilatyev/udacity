@@ -10,3 +10,7 @@
 	path = CarND/term3/CarND-Semantic-Segmentation
 	url = git@github.com:sfefilatyev/CarND-Semantic-Segmentation.git
 	branch = master
+[submodule "CarND/term3/CarND-Path-Planning-Project"]
+	path = CarND/term3/CarND-Path-Planning-Project
+	url = git@github.com:sfefilatyev/CarND-Path-Planning-Project.git
+	branch = master
