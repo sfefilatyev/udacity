@@ -14,3 +14,7 @@
 	path = CarND/term3/CarND-Path-Planning-Project
 	url = git@github.com:sfefilatyev/CarND-Path-Planning-Project.git
 	branch = master
+[submodule "CarND/term2/CarND-MPC-Project"]
+	path = CarND/term2/CarND-MPC-Project
+	url = git@github.com:sfefilatyev/CarND-MPC-Project.git
+	branch = master
