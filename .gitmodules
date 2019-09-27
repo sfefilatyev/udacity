@@ -18,3 +18,7 @@
 	path = CarND/term2/CarND-MPC-Project
 	url = git@github.com:sfefilatyev/CarND-MPC-Project.git
 	branch = master
+[submodule "CarND/term2/CarND-Extended-Kalman-Filter-Project"]
+	path = CarND/term2/CarND-Extended-Kalman-Filter-Project
+	url = git@github.com:sfefilatyev/CarND-Extended-Kalman-Filter-Project.git
+	branch = master
