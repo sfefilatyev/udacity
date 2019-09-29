@@ -22,3 +22,7 @@
 	path = CarND/term2/CarND-Extended-Kalman-Filter-Project
 	url = git@github.com:sfefilatyev/CarND-Extended-Kalman-Filter-Project.git
 	branch = master
+[submodule "CarND/term2/CarND-Kidnapped-Vehicle-Project"]
+	path = CarND/term2/CarND-Kidnapped-Vehicle-Project
+	url = git@github.com:sfefilatyev/CarND-Kidnapped-Vehicle-Project.git
+	branch = master
