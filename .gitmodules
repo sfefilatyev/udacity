@@ -30,3 +30,7 @@
 	path = CarND/term2/CarND-PID-Control-Project
 	url = git@github.com:sfefilatyev/CarND-PID-Control-Project.git
 	branch = master
+[submodule "CarND/term2/CarND-Unscented-Kalman-Filter-Project"]
+	path = CarND/term2/CarND-Unscented-Kalman-Filter-Project
+	url = git@github.com:sfefilatyev/CarND-Unscented-Kalman-Filter-Project.git
+	branch = master
