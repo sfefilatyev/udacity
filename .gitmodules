@@ -34,3 +34,7 @@
 	path = CarND/term2/CarND-Unscented-Kalman-Filter-Project
 	url = git@github.com:sfefilatyev/CarND-Unscented-Kalman-Filter-Project.git
 	branch = master
+[submodule "CarND/term3/CarND-Capstone"]
+	path = CarND/term3/CarND-Capstone
+	url = git@github.com:sfefilatyev/CarND-Capstone.git
+	branch = master
