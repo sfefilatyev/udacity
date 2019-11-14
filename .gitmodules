@@ -42,3 +42,7 @@
 	path = CarND/term1/CarND-Advanced-Lane-Lines
 	url = git@github.com:sfefilatyev/CarND-Advanced-Lane-Lines.git
 	branch = master
+[submodule "CarND/term1/CarND-Behavioral-Cloning"]
+	path = CarND/term1/CarND-Behavioral-Cloning
+	url = git@github.com:sfefilatyev/CarND-Behavioral-Cloning.git
+	branch = master
