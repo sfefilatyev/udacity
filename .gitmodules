@@ -50,3 +50,7 @@
 	path = CarND/term1/CarND-LaneLines
 	url = git@github.com:sfefilatyev/CarND-LaneLines.git
 	branch = master
+[submodule "CarND/term1/CarND-Vehicle-Detection"]
+	path = CarND/term1/CarND-Vehicle-Detection
+	url = git@github.com:sfefilatyev/CarND-Vehicle-Detection.git
+	branch = master
